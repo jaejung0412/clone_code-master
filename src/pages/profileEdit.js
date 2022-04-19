@@ -15,9 +15,23 @@ import { FormGroup } from "@mui/material";
 import { FormControlLabel } from "@mui/material";
 import { Checkbox } from "@mui/material";
 import { styled } from "@mui/system";
+import { useDispatch } from "react-redux";
+import { actionCreators as userActions } from "../redux/modules/user";
 
 const ProfileEdit = (props) => {
-  const token = document.cookie;
+  const dispatch = useDispatch();
+  const token = document.cookie.split("=")[1];
+  const [ImgFile, setImgFile] = React.useState("");
+  const selectFile = (e) => {
+    setImgFile(e.target.files[0]);
+  };
+  const hidden = React.useRef(null);
+  const handleClick = (e) => {
+    hidden.current.click();
+  };
+  const send = () => {
+    dispatch(userActions.changeProfileDB(ImgFile, token));
+  };
   console.log(token);
   return (
     <React.Fragment>
@@ -30,7 +44,15 @@ const ProfileEdit = (props) => {
           <grid>
             <h1>Username</h1>
             <div>
-              <Button>프로필 사진 바꾸기</Button>
+              <input
+                type="file"
+                onChange={selectFile}
+                ref={hidden}
+                id="fileUpload"
+                accept="image/jpeg, image/png, image/jpg"
+                style={{ display: "none" }}
+              />
+              <Button onClick={handleClick}>프로필 사진 바꾸기</Button>
               {/* <Modal
                                     open={open}
                                     onClose={handleClose}
@@ -115,7 +137,9 @@ const ProfileEdit = (props) => {
         </div> */}
       </div>
       <div>
-        <Button variant="contained">제출</Button>
+        <Button variant="contained" onClick={send}>
+          제출
+        </Button>
       </div>
     </React.Fragment>
   );
