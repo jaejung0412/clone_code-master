@@ -7,6 +7,8 @@ import Login from "../pages/login";
 import Main from "../pages/main";
 import ProfilePage from "../pages/profilePage";
 import Post from "../components/Post";
+import ProfileEdit from "../pages/profileEdit";
+import Sample from "../pages/sample";
 
 function App() {
   return (
@@ -16,7 +18,8 @@ function App() {
         <Route path="/signup/*" element={<Signup />} />
         <Route path="/login/*" element={<Login />} />
         <Route path="/profile/:user/*" element={<ProfilePage />} />
-        <Route path="/samplepost" element={<Post />} />
+        <Route path="/edit/:user/*" element={<ProfileEdit />} />
+        <Route path="/sampleedit" element={<ProfileEdit />} />
       </Routes>
     </div>
   );
