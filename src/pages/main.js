@@ -4,7 +4,7 @@ import Header from "../Shared/header";
 
 import { actionCreators as postActions } from "../redux/modules/post";
 import { actionCreators as userActions } from "../redux/modules/user";
-import Post from "../components/post";
+import Post from "../components/Post";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "../components/Loader";
 
