@@ -15,13 +15,13 @@ import { FormGroup } from "@mui/material";
 import { FormControlLabel } from "@mui/material";
 import { Checkbox } from "@mui/material";
 import { styled } from "@mui/system";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { actionCreators as userActions } from "../redux/modules/user";
-
 const ProfileEdit = (props) => {
   const dispatch = useDispatch();
   const token = document.cookie.split("=")[1];
   const [ImgFile, setImgFile] = React.useState("");
+
   const selectFile = (e) => {
     setImgFile(e.target.files[0]);
   };
@@ -29,10 +29,13 @@ const ProfileEdit = (props) => {
   const handleClick = (e) => {
     hidden.current.click();
   };
-  const send = () => {
+  const Send = () => {
     dispatch(userActions.changeProfileDB(ImgFile, token));
   };
-  console.log(token);
+
+  const prevpp = useSelector((state) => state.user);
+  console.log(prevpp);
+
   return (
     <React.Fragment>
       <Header />
@@ -52,7 +55,7 @@ const ProfileEdit = (props) => {
                 accept="image/jpeg, image/png, image/jpg"
                 style={{ display: "none" }}
               />
-              <Button onClick={handleClick}>프로필 사진 바꾸기</Button>
+              <Submit onClick={handleClick}>Select from computer</Submit>
               {/* <Modal
                                     open={open}
                                     onClose={handleClose}
@@ -137,13 +140,27 @@ const ProfileEdit = (props) => {
         </div> */}
       </div>
       <div>
-        <Button variant="contained" onClick={send}>
+        <Button variant="contained" onClick={Send}>
           제출
         </Button>
       </div>
     </React.Fragment>
   );
 };
+const Submit = styled("button")({
+  width: "157px",
+  height: "30px",
+  color: "white",
+  backgroundColor: "#0095f6",
+  border: "0px",
+  borderRadius: "5px",
+  "&:hover": {
+    cursor: "pointer",
+  },
+  "&:active": {
+    opacity: "0.7",
+  },
+});
 
 const ProfileImg = styled("div")({
   width: "150px",
