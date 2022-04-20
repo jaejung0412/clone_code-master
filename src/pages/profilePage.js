@@ -1,265 +1,307 @@
-import React from 'react';
-import Header from '../Shared/header';
+import React from "react";
+import Header from "../Shared/header";
 
 //MUI
-import { styled } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import ImageList from '@mui/material/ImageList';
-import ImageListItem from '@mui/material/ImageListItem';
-import ButtonBase from '@mui/material/ButtonBase';
-import Modal from '@mui/material/Modal';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import IconButton from '@mui/material/IconButton';
-import Comment from '../components/comment';
-import FormControl from '@mui/material/FormControl';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import InputAdornment from '@mui/material/InputAdornment';
-import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
+import { styled } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import ImageList from "@mui/material/ImageList";
+import ImageListItem from "@mui/material/ImageListItem";
+import ButtonBase from "@mui/material/ButtonBase";
+import Modal from "@mui/material/Modal";
+import Button from "@mui/material/Button";
+import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
+import { useNavigate, useParams } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { actionCreators as userActions } from "../redux/modules/user";
+import { actionsCreators as profActions } from "../redux/modules/profile";
+import { actionCreators as commentActions } from "../redux/modules/comment";
 
-//
+//components
+import EditModal from "../components/EditModal";
+import Comment from "../redux/modules/comment";
 
 const ProfilePage = (props) => {
-    const [values, setValues] = React.useState();
-    const [open, setOpen] = React.useState(false);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+  const post_list = useSelector((state) => state.profile.list);
+  const user_info = useSelector((state) => state.profile.data);
+  const dispatch = useDispatch();
+  const param = useParams();
+  const user = param.user;
+  const post = param.post;
+  const nav = useNavigate();
+  const [CommentData, setComment] = React.useState("");
+  const [open, setOpen] = React.useState(false);
 
-    const handleChange = (prop) => (event) => {
-    setValues(event.target.value);
-    };
+  const handleOpen = () => setOpen(true);
 
-    return (
-        <div>
-            <Header/>
-            <Boxx>
-                <header style={{display: "flex"}}>
-                    <div>
-                        <ProfileImg/>
-                    </div>
-                    <div>
-                        <grid>
-                            <h1>Username</h1>
-                             <div>
-                                <Button onClick={handleOpen}>Open modal</Button>
-                                <Modal
-                                    open={open}
-                                    onClose={handleClose}
-                                    aria-labelledby="modal-modal-title"
-                                    aria-describedby="modal-modal-description"
-                                >
-                                    <Box sx={style}>
-                                    <Typography id="modal-modal-title" variant="h6" component="h2">
-                                        Text in a modal
-                                    </Typography>
-                                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                                        Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-                                    </Typography>
-                                    </Box>
-                                </Modal>
-                            </div>
-                        </grid>
-                    </div>
-                </header>
-                <ImageList sx={{ maxWidth: 975 }} cols={3} gap={20}>
-                    {itemData.map((item) => (
-                        <ImageListItem key={item.img}>
-                            <ImageButton  onClick={handleOpen}>
-                                <img
-                                src={`${item.img}?w=164&h=164&fit=crop&auto=format`}
-                                srcSet={`${item.img}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-                                alt={item.title}
-                                loading="lazy"
-                                />
-                            </ImageButton>
-                        </ImageListItem>
-                    ))}
-                </ImageList>
-            </Boxx>
-             <div>
-                <Modal
-                    open={open}
-                    onClose={handleClose}
-                    aria-labelledby="modal-modal-title"
-                    aria-describedby="modal-modal-description"
-                >
-                    <Box sx={style}>
-                    <PostImg>
+  const handleClose = () => {
+    nav(`/profile/${user}/`);
+    setOpen(false);
+  };
+  React.useEffect(() => {
+    dispatch(userActions.loginCheck());
+  }, []);
 
-                    </PostImg>
-                    <PostContent>
-                        <PostHeader>
-                            <CommentImg/>
-                            <Commentname>username</Commentname>
-                            <IconButton sx={{marginLeft: "auto", marginRight: "13px"}}>
-                                <MoreHorizIcon />
-                            </IconButton>
-                        </PostHeader>
-                        <Comment/>
-                        <Comment/>
-                            <CommentWrite>
-                                <SentimentSatisfiedAltIcon sx={{marginLeft: "13px"}}/>
-                                <div style={{width: "100%"}}>
-                                    <CommentBox placeholder='Add a comment...'/>
-                                </div>
-                                <div style={{marginLeft: "auto", marginRight: "13px"}}>
-                                    <Send onClick={() => console.log('clicked')}><b>Post</b></Send>
-                                </div>
-                            </CommentWrite>
-                    </PostContent>
-                    </Box>
-                </Modal>
-            </div>
-        </div>
-    );
-}
+  React.useEffect(() => {
+    dispatch(profActions.getProfData(user));
+  }, []);
 
-const Send = styled('button') ({
-border: "0px",
-background: "transparent",
-color: "#0095f6",
-'&:hover':{
-    cursor: "pointer",
-    opacity: "80%"
-}
+  const handleChange = (event) => {
+    setComment(event.target.value);
+  };
 
-})
+  if (!user_info && !post_list) {
+    return;
+  }
 
-const CommentBox = styled('input') ({
-border: "0px",
-height: "30px",
-marginLeft: "13px",
-width: "90%"
-})
-
-const style = {
-position: 'absolute',
-top: '50%',
-left: '50%',
-transform: 'translate(-50%, -50%)',
-width: '66%',
-height: '80%',
-bgcolor: 'background.paper',
-boxShadow: 0,
-p: 0,
-borderRadius: '0px 5px 5px 0px',
-display: "inline-flex"
+  return (
+    <div>
+      <Header />
+      <Boxx>
+        <header>
+          <div>
+            <ProfileImg
+              style={{ backgroundImage: `url(${user_info?.progfileImg})` }}
+            />
+          </div>
+          <div>
+            <grid>
+              <h1>{user_info?.nickname}</h1>
+              <div>
+                <Button onClick={() => nav("/profileEdit")}>
+                  Edit profile
+                </Button>
+              </div>
+              <div>
+                게시물 <strong>{post_list.length}</strong> 팔로워{" "}
+                <strong>{user_info.userFollowerCnt}</strong> 팔로우
+                <strong>{user_info.userFollowingCnt}</strong>
+              </div>
+            </grid>
+          </div>
+        </header>
+        <ImageList sx={{ maxWidth: 970 }} cols={3} gap={40}>
+          {post_list?.map((item, idx) => (
+            <ImageListItem key={item.id}>
+              <ImageButton
+                onClick={() => {
+                  nav(`/profile/${user}/${idx}`);
+                  handleOpen();
+                }}
+              >
+                <div
+                  style={{
+                    backgroundImage: `url(${item.imageUrl})`,
+                    width: "293px",
+                    height: "293px",
+                    backgroundSize: "cover",
+                  }}
+                />
+              </ImageButton>
+            </ImageListItem>
+          ))}
+        </ImageList>
+      </Boxx>
+      <div>
+        <Modal
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style}>
+            <PostImgContainer>
+              <PostImg
+                style={{ backgroundImage: `url(${post_list[post]?.imageUrl})` }}
+              />
+            </PostImgContainer>
+            <PostContent>
+              <PostHeader>
+                <CommentImg />
+                <Commentname>username</Commentname>
+                <EditModal />
+              </PostHeader>
+              {post_list[post]?.comment?.map((el, idx) => {
+                return (
+                  <div
+                    key={idx}
+                    style={{
+                      height: "50px",
+                      display: "flex",
+                      marginTop: "13px",
+                    }}
+                  >
+                    <CommentImg />
+                    <Commentname>
+                      {el.nickname}
+                      <CommentDate>{el.createdAt}</CommentDate>
+                    </Commentname>
+                    <Cmnt>{el.content}</Cmnt>
+                    <button
+                      onClick={() =>
+                        dispatch(commentActions.deleteComment(el.id))
+                      }
+                    >
+                      delete
+                    </button>
+                  </div>
+                );
+              })}
+              <CommentWrite>
+                <SentimentSatisfiedAltIcon sx={{ marginLeft: "13px" }} />
+                <div style={{ width: "100%" }}>
+                  <CommentBox
+                    value={CommentData}
+                    onChange={handleChange}
+                    placeholder="Add a comment..."
+                  />
+                </div>
+                <div style={{ marginLeft: "auto", marginRight: "13px" }}>
+                  <Send
+                    onClick={() =>
+                      dispatch(
+                        commentActions.addCommentDB(
+                          post_list[post].id,
+                          CommentData
+                        )
+                      )
+                    }
+                  >
+                    <b>Post</b>
+                  </Send>
+                </div>
+              </CommentWrite>
+            </PostContent>
+          </Box>
+        </Modal>
+      </div>
+    </div>
+  );
 };
 
-const PostImg = styled('div') ({
-width: "60%",
-height: "100%",
-backgroundColor: "black",
-margin: "0px",
-})
+const CommentDate = styled("span")({
+  fontSize: "12px",
+  color: "#B7BBBD",
+  padding: "0px",
+  margin: "0px",
+  marginTop: "10px",
+});
 
-const PostContent = styled('div') ({
-float: "right",
-width: "500px",
-})
+const Cmnt = styled("p")({
+  fontSize: "15px",
+  margin: "0px 3px 0px 5px",
+});
 
-const PostHeader = styled('div') ({
-width: "100%",
-height: "60px",
-borderBottom: "1px solid #e2e2e1",
-display: "flex",
-alignItems: "center"
-})
+const Send = styled("button")({
+  border: "0px",
+  background: "transparent",
+  color: "#0095f6",
+  "&:hover": {
+    cursor: "pointer",
+    opacity: "80%",
+  },
+});
 
-const CommentImg = styled('div') ({
-width: '32px',
-height: '32px',
-background: "grey",
-borderRadius: "16px",
-marginLeft: "13px",
-})
+const CommentBox = styled("input")({
+  border: "0px",
+  height: "30px",
+  marginLeft: "13px",
+  width: "90%",
+});
 
-const Commentname = styled('p') ({
-fontSize: "14px",
-fontWeight: "500",
-marginLeft: "13px"
-})
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: "66%",
+  height: "80%",
+  bgcolor: "background.paper",
+  boxShadow: 0,
+  p: 0,
+  borderRadius: "0px 5px 5px 0px",
+  display: "inline-flex",
+};
 
-const ProfileImg = styled('div') ({
-width: "150px",
-height: "150px",
-background: "#62676A",
-borderRadius: "75px"
-})
+const PostImgContainer = styled("div")({
+  width: "60%",
+  height: "100%",
+  backgroundColor: "black",
+  margin: "0px",
+});
 
-const Boxx = styled(Box) ({
-maxWidth: "975px",
-height: "100%",
-padding: "30px 20px 0px",
-margin: "auto",
-background: "#F7F7F8",
-border: "1px solid black",
-})
+const PostImg = styled("div")({
+  backgroundSize: "contain",
+  backgroundPosition: "center",
+  width: "100%",
+  height: "100%",
+  backgroundRepeat: "no-repeat",
+});
 
-const CommentWrite = styled('div') ({
-height: "53px",
-borderTop: "1px solid #e2e2e1",
-display: "inline-flex",
-alignItems: "center",
-width: "100%"
-})
+const PostContent = styled("div")({
+  float: "right",
+  width: "500px",
+});
+
+const PostHeader = styled("div")({
+  width: "100%",
+  height: "60px",
+  borderBottom: "1px solid #e2e2e1",
+  display: "flex",
+  alignItems: "center",
+});
+
+const CommentImg = styled("div")({
+  width: "32px",
+  height: "32px",
+  background: "grey",
+  borderRadius: "16px",
+  marginLeft: "13px",
+});
+
+const Commentname = styled("p")({
+  fontSize: "14px",
+  fontWeight: "500",
+  marginLeft: "13px",
+});
+
+const ProfileImg = styled("div")({
+  width: "150px",
+  height: "150px",
+  background: "#62676A",
+  borderRadius: "75px",
+  backgroundSize: "150px",
+});
+
+const Boxx = styled(Box)({
+  maxWidth: "975px",
+  height: "100%",
+  padding: "30px 20px 0px",
+  margin: "auto",
+  background: "#F7F7F8",
+  border: "1px solid black",
+});
+
+const CommentWrite = styled("div")({
+  height: "53px",
+  borderTop: "1px solid #e2e2e1",
+  display: "inline-flex",
+  alignItems: "center",
+  width: "100%",
+});
 
 const ImageButton = styled(ButtonBase)(({ theme }) => ({
-  '&:hover, &.Mui-focusVisible': {
-        filter: "brightness(80%)",
-    '& .MuiImageBackdrop-root': {
+  "&:hover, &.Mui-focusVisible": {
+    filter: "brightness(80%)",
+    "& .MuiImageBackdrop-root": {
       opacity: 0.15,
     },
-    '& .MuiImageMarked-root': {
+    "& .MuiImageMarked-root": {
       opacity: 0,
     },
-    '& .MuiTypography-root': {
-      border: '4px solid currentColor',
+    "& .MuiTypography-root": {
+      border: "4px solid currentColor",
     },
   },
 }));
 
 export default ProfilePage;
-
-
-
-
-
-
-
-
-const itemData = [
-  {
-    img: 'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e',
-    title: 'Breakfast',
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1551782450-a2132b4ba21d',
-    title: 'Burger',
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1522770179533-24471fcdba45',
-    title: 'Camera',
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1444418776041-9c7e33cc5a9c',
-    title: 'Coffee',
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1533827432537-70133748f5c8',
-    title: 'Hats',
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62',
-    title: 'Honey',
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1516802273409-68526ee1bdd6',
-    title: 'Basketball',
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1518756131217-31eb79b20e8f',
-    title: 'Fern',
-  },
-];
